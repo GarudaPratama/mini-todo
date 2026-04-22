@@ -5,23 +5,22 @@ const inventorySlice = createSlice({
   initialState: { listBarang: [] },
   reducers: {
     tambahBarang: (state, action) => {
-      // payload berisi { id, nama, kuantitas }
       state.listBarang.push(action.payload);
     },
     hapusSemuaBarang: (state) => {
       state.listBarang = [];
     },
     editBarang: (state, action) => {
-      const { id, nama, kuantitas } = action.payload;
+      const { id, nama, berfungsi, rusak } = action.payload;
       const barang = state.listBarang.find(b => b.id === id);
       if (barang) {
         barang.nama = nama;
-        barang.kuantitas = kuantitas;
+        barang.berfungsi = berfungsi;
+        barang.rusak = rusak;
       }
     },
     hapusSatuBarang: (state, action) => {
-      const idYangDihapus = action.payload;
-      state.listBarang = state.listBarang.filter(b => b.id !== idYangDihapus);
+      state.listBarang = state.listBarang.filter(b => b.id !== action.payload);
     }
   }
 });

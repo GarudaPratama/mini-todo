@@ -7,114 +7,121 @@ const InventoryApp = () => {
   const dispatch = useDispatch();
   
   const [namaBarang, setNamaBarang] = useState('');
-  const [kuantitas, setKuantitas] = useState('');
+  const [jmlBerfungsi, setJmlBerfungsi] = useState('');
+  const [jmlRusak, setJmlRusak] = useState('');
   const [editingId, setEditingId] = useState(null);
 
   const handleSubmit = () => {
-    if (namaBarang.trim() === '' || kuantitas === '') return;
+    if (!namaBarang || jmlBerfungsi === '' || jmlRusak === '') return;
+
+    const dataBarang = {
+      id: editingId || Date.now(),
+      nama: namaBarang,
+      berfungsi: parseInt(jmlBerfungsi),
+      rusak: parseInt(jmlRusak)
+    };
 
     if (editingId) {
-      dispatch(editBarang({ 
-        id: editingId, 
-        nama: namaBarang, 
-        kuantitas: parseInt(kuantitas) 
-      }));
+      dispatch(editBarang(dataBarang));
       setEditingId(null);
     } else {
-      dispatch(tambahBarang({ 
-        id: Date.now(), 
-        nama: namaBarang, 
-        kuantitas: parseInt(kuantitas) 
-      }));
+      dispatch(tambahBarang(dataBarang));
     }
     
-    // Reset form
     setNamaBarang('');
-    setKuantitas('');
+    setJmlBerfungsi('');
+    setJmlRusak('');
   };
 
   const mulaiEdit = (barang) => {
     setEditingId(barang.id);
     setNamaBarang(barang.nama);
-    setKuantitas(barang.kuantitas);
+    setJmlBerfungsi(barang.berfungsi);
+    setJmlRusak(barang.rusak);
   };
 
   return (
     <div className="min-h-screen bg-emerald-50 flex items-center justify-center p-6 text-slate-900 font-sans">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg border border-emerald-100">
-        <h1 className="text-3xl font-extrabold mb-2 text-center tracking-tight text-emerald-700">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-emerald-100">
+        <h1 className="text-3xl font-extrabold mb-2 text-center text-emerald-700 tracking-tight">
           E-Inventory Masjid
         </h1>
-        <p className="text-center text-slate-500 mb-8 text-sm">Manajemen Inventaris Barang Masjid</p>
+        <p className="text-center text-slate-500 mb-8 text-sm">Sistem Pendataan Sarana & Prasarana</p>
         
-        <div className="space-y-3 mb-8">
-          <input 
-            type="text"
-            value={namaBarang}
-            onChange={(e) => setNamaBarang(e.target.value)}
-            placeholder="Nama Barang (misal: Al-Qur'an)"
-            className="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-          />
-          <input 
-            type="number"
-            value={kuantitas}
-            onChange={(e) => setKuantitas(e.target.value)}
-            placeholder="Kuantitas"
-            className="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-          />
-          
-          <div className="flex gap-2">
-            <button 
-              onClick={handleSubmit}
-              className={`flex-1 ${editingId ? 'bg-orange-500' : 'bg-emerald-600'} text-white font-semibold py-3 px-4 rounded-xl active:scale-95 transition-all cursor-pointer`}
-            >
-              {editingId ? '💾 Simpan Perubahan' : '➕ Tambah Barang'}
-            </button>
-            
-            <button 
-              onClick={() => dispatch(hapusSemuaBarang())}
-              className="bg-slate-100 text-rose-600 border border-rose-200 font-semibold py-3 px-4 rounded-xl hover:bg-rose-50 active:scale-95 transition-all cursor-pointer"
-              title="Reset Semua"
-            >
-              🗑️
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="md:col-span-2">
+            <label className="block text-xs font-bold uppercase text-slate-500 mb-1 ml-1">Nama Barang</label>
+            <input 
+              type="text"
+              value={namaBarang}
+              onChange={(e) => setNamaBarang(e.target.value)}
+              placeholder="Contoh: Kursi Salat"
+              className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+            />
           </div>
+          <div>
+            <label className="block text-xs font-bold uppercase text-emerald-600 mb-1 ml-1">Kondisi Baik</label>
+            <input 
+              type="number"
+              value={jmlBerfungsi}
+              onChange={(e) => setJmlBerfungsi(e.target.value)}
+              placeholder="0"
+              className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase text-rose-600 mb-1 ml-1">Kondisi Rusak</label>
+            <input 
+              type="number"
+              value={jmlRusak}
+              onChange={(e) => setJmlRusak(e.target.value)}
+              placeholder="0"
+              className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 outline-none"
+            />
+          </div>
+          
+          <button 
+            onClick={handleSubmit}
+            className={`md:col-span-2 py-3.5 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 cursor-pointer ${editingId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+          >
+            {editingId ? '💾 Simpan Perubahan' : '➕ Tambah ke Inventaris'}
+          </button>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200">
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-emerald-600 text-white">
-              <tr>
-                <th className="p-3 text-sm font-semibold">Nama Barang</th>
-                <th className="p-3 text-sm font-semibold">Jumlah</th>
-                <th className="p-3 text-sm font-semibold text-center">Aksi</th>
+            <thead>
+              <tr className="bg-slate-800 text-white text-xs uppercase tracking-wider">
+                <th className="p-4">Barang</th>
+                <th className="p-4 text-center">Total</th>
+                <th className="p-4 text-center">Baik</th>
+                <th className="p-4 text-center">Rusak</th>
+                <th className="p-4 text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-slate-100">
               {listBarang.length === 0 ? (
                 <tr>
-                  <td colSpan="3" className="p-6 text-center text-slate-400 italic bg-slate-50">
-                    Belum ada data barang.
+                  <td colSpan="5" className="p-12 text-center text-slate-400 italic bg-slate-50">
+                    Belum ada data inventaris terdaftar.
                   </td>
                 </tr>
               ) : (
-                listBarang.map((barang) => (
-                  <tr key={barang.id} className="hover:bg-emerald-50 transition-colors">
-                    <td className="p-3 font-medium text-slate-700">{barang.nama}</td>
-                    <td className="p-3 text-slate-600">{barang.kuantitas} pcs</td>
-                    <td className="p-3 flex justify-center gap-2">
-                      <button 
-                        onClick={() => mulaiEdit(barang)}
-                        className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-                      >
-                        ✏️
-                      </button>
-                      <button 
-                        onClick={() => dispatch(hapusSatuBarang(barang.id))}
-                        className="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors"
-                      >
-                        ❌
-                      </button>
+                listBarang.map((b) => (
+                  <tr key={b.id} className="hover:bg-emerald-50/50 transition-colors">
+                    <td className="p-4 font-bold text-slate-700">{b.nama}</td>
+                    <td className="p-4 text-center bg-slate-50/80 font-bold">{b.berfungsi + b.rusak}</td>
+                    <td className="p-4 text-center text-emerald-600 font-semibold">{b.berfungsi}</td>
+                    <td className="p-4 text-center text-rose-600 font-semibold">{b.rusak}</td>
+                    <td className="p-4">
+                      <div className="flex justify-center gap-2">
+                        <button onClick={() => mulaiEdit(b)} className="p-2 hover:bg-blue-100 rounded-lg text-blue-600 transition-colors">
+                          ✏️
+                        </button>
+                        <button onClick={() => dispatch(hapusSatuBarang(b.id))} className="p-2 hover:bg-rose-100 rounded-lg text-rose-600 transition-colors">
+                          ❌
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -122,6 +129,17 @@ const InventoryApp = () => {
             </tbody>
           </table>
         </div>
+        
+        {listBarang.length > 0 && (
+           <div className="mt-6 flex justify-end">
+             <button 
+               onClick={() => dispatch(hapusSemuaBarang())}
+               className="text-sm font-medium text-rose-500 hover:text-rose-700 transition-colors cursor-pointer"
+             >
+               Hapus Seluruh Data
+             </button>
+           </div>
+        )}
       </div>
     </div>
   );
