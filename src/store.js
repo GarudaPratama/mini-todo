@@ -1,9 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import todoReducer from './TodoSlice';
+import inventoryReducer from './inventorySlice';
 
-// Pastikan ada kata 'export' di depan const store
 export const store = configureStore({
   reducer: {
-    todo: todoReducer
+    inventory: inventoryReducer
   }
 });
